@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"math/rand"
 	"os"
@@ -26,6 +27,30 @@ func languageFundamentals() {
 	pointerLogic()
 
 	controlStructures()
+	functions()
+
+}
+
+func add(x, y int) int {
+	return x + y
+
+}
+
+func swap(a, b string) (string, string) {
+	return b, a
+}
+
+func functions() {
+	fmt.Println("-----------------------------")
+	fmt.Println("functions")
+
+	sum := add(10, 5)
+	fmt.Println(sum)
+
+	a, b := "foo", "bar"
+
+	c, d := swap(a, b)
+	fmt.Printf("c, d = %s, %s\n", c, d)
 
 }
 
@@ -40,6 +65,36 @@ func controlStructures() {
 	ifStatement()
 	switchStatement()
 
+	errorHandling()
+
+}
+
+type NestedError struct {
+	Message string
+	Err     error
+}
+
+func (e *NestedError) Error() string {
+	return fmt.Sprintf("%s\n containse: %s\n",
+		e.Message, e.Err.Error())
+}
+
+func errorHandling() error {
+
+	//file, err := os.Open("somefile.ext")
+	//if err != nil {
+	//	log.Fatal(err)
+	//	return err
+	//}
+	//fmt.Println(file)
+
+	e1 := errors.New("error 42")
+	e2 := fmt.Errorf("error %d", 42)
+
+	fmt.Println(e1)
+	fmt.Println(e2)
+
+	return e1
 }
 
 func switchStatement() {
@@ -76,6 +131,14 @@ func switchStatement() {
 		fmt.Println("I'm sleeping")
 	}
 
+	switch hour := time.Now().Hour(); { // Empty expression means "true"
+	case hour >= 5 && hour < 9:
+		fmt.Println("I'm writing")
+	case hour >= 9 && hour < 18:
+		fmt.Println("I'm working")
+	default:
+		fmt.Println("I'm sleeping")
+	}
 }
 
 func ifStatement() {
