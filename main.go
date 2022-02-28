@@ -66,6 +66,11 @@ func channelLooping() {
 	ch <- "Kristin"
 
 	close(ch) // close otherwise it will deadlock
+	/*
+		Had the channel not been closed, the loop would
+		stop and wait for the next value to be sent
+		along the channel, potentially indefinitely.
+	*/
 
 	for s := range ch {
 		fmt.Println(s)
