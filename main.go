@@ -36,6 +36,9 @@ func add(x, y int) int {
 
 }
 
+/*
+Functions multiple return types
+*/
 func swap(a, b string) (string, string) {
 	return b, a
 }
@@ -52,6 +55,51 @@ func functions() {
 	c, d := swap(a, b)
 	fmt.Printf("c, d = %s, %s\n", c, d)
 
+	// recursion
+	fmt.Println("recursion factorial(11)")
+	fmt.Println(factorial(11))
+
+	// defer function
+	defer fmt.Println("cruel world")
+	fmt.Printf("goodbye ")
+
+	// second example of defer
+	file, err := os.Create("/tmp/foo.txt")
+	defer closeFile(file)
+
+	_, err = fmt.Fprint(file, "Your mother was a hampster #2\n")
+	if err != nil {
+		return
+	}
+
+	fmt.Println("File written to successfully")
+
+	// hostname
+	name, err := os.Hostname()
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println("hostname:", name)
+
+}
+
+func closeFile(f *os.File) {
+
+	if err := f.Close(); err != nil {
+		fmt.Println("Error closing file:", err.Error())
+		return
+	}
+	fmt.Println("File closed successfully")
+}
+
+// recursion
+func factorial(n int) int {
+
+	if n < 1 {
+		return 1
+	}
+	return n * factorial(n-1)
 }
 
 func controlStructures() {
