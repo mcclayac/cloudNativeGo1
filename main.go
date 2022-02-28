@@ -3,6 +3,7 @@ package main
 import (
 	"errors"
 	"fmt"
+	"io"
 	"math"
 	"math/rand"
 	"os"
@@ -41,6 +42,218 @@ func languageFundamentals() {
 	interfaces()
 	typeAssertions()
 
+	// embedding
+	interfaceEmbedding()
+	structEmbedding()
+
+	// Concurrency
+	goRoutines()
+	channels()
+	channelBuffering()
+	channelClosing()
+	channelLooping()
+
+}
+
+func channelLooping() {
+	fmt.Println("-----------------------------")
+	fmt.Println("channelLooping")
+
+	ch := make(chan string, 10)
+	ch <- "Maxine"
+	ch <- "Angelo"
+	ch <- "Alexis"
+	ch <- "Kristin"
+
+	close(ch) // close otherwise it will deadlock
+
+	for s := range ch {
+		fmt.Println(s)
+	}
+}
+
+func channelClosing() {
+	fmt.Println("-----------------------------")
+	fmt.Println("channelClosing")
+
+	ch := make(chan string, 10)
+	ch <- "Maxine"
+	ch <- "Angelo"
+	ch <- "Alexis"
+	ch <- "Kristin"
+
+	close(ch)
+
+	msg, ok := <-ch
+	fmt.Printf("%q, %v\n", msg, ok)
+
+	msg, ok = <-ch
+	fmt.Printf("%q, %v\n", msg, ok)
+
+	msg, ok = <-ch
+	fmt.Printf("%q, %v\n", msg, ok)
+
+	msg, ok = <-ch
+	fmt.Printf("%q, %v\n", msg, ok)
+
+	msg, ok = <-ch
+	fmt.Printf("%q, %v\n", msg, ok)
+
+}
+
+func channelBuffering() {
+	fmt.Println("-----------------------------")
+	fmt.Println("channelBuffering")
+	/*
+			Channel Buffering
+
+		Go channels may be buffered, in which case they
+		contain an internal value queue with a fixed
+		capacity that’s specified when the buffer is
+		initialized. Sends to a buffered channel only
+		block when the buffer is full; receives from
+		a channel only block when the buffer is empty.
+		Any other time, send and receive operations
+		write to or read from the buffer, respectively,
+		and exit immediately.
+
+		A buffered channel can be created by providing
+		a second argument to the make function to
+		indicate its capacity:
+
+	*/
+
+	ch := make(chan string, 3)
+
+	ch <- "foo" // Two non-blocking sends
+	ch <- "bar"
+	ch <- "Tony"
+
+	fmt.Println(<-ch) // Two non-blocking receives
+	fmt.Println(<-ch)
+	fmt.Println(<-ch)
+
+	//	fmt.Println(<-ch) // will block
+}
+
+func channels() {
+	fmt.Println("-----------------------------")
+	fmt.Println("channels")
+
+	fmt.Println("fmt.Println(val2)")
+
+	/*
+		Channels may be created using the make function.
+		Each channel can transmit values of a specific
+		type, called its element type. Channel types
+		are written using the chan keyword followed by
+		their element type. The following example
+		declares and allocates an int channel:
+	*/
+
+	// create a channel - element type = int
+	// var ch chan int = make(chan int)
+
+	/*
+		The two primary operations supported by channels
+		are send and receive, both of which use
+		the <- operator, where the arrow indicates the
+		direction of the data flow as demonstrated
+		in the following:
+	*/
+
+	//val := 10
+	//ch <- val // Sending on a channel
+	//
+	//fmt.Println("ddd")
+	//val2 := <-ch // recieving on a channel and assigning to val2
+	//fmt.Println(val2)
+
+	//fmt.Println(val2)
+	//
+	//<-ch // recieving on a channel and disvarding the result
+
+	//fmt.Println("fmt.Println(val2)")
+
+	/*
+			Channel Blocking
+
+		By default, a channel is unbuffered. Unbuffered channels
+		have a very useful property: sends on them block until
+		another goroutine receives on the channel, and receives
+		block until another goroutine sends on the channel.
+		This behavior can be exploited to synchronize two
+		goroutines, as demonstrated in the following:
+	*/
+
+	ch2 := make(chan string) // Allocate a string channel
+
+	go func() {
+		message := <-ch2     // Blocking receive; assigns to message
+		fmt.Println(message) // prints "ping"
+		ch2 <- "pong"
+	}()
+
+	ch2 <- "ping"
+	fmt.Println(<-ch2) // print "pong"
+
+}
+
+func foo() {
+	fmt.Println("This is the foo function")
+
+}
+func goRoutines() {
+	fmt.Println("-----------------------------")
+	fmt.Println("goRoutines")
+
+	foo()    //  call foo, ait for it to complete
+	go foo() // Spawn a new goroutine that calls foo() concurrently
+}
+
+func Log(w io.Writer, message string) {
+	go func() {
+		fmt.Fprint(w, message)
+	}() // Don't forget the trailing parentheses!
+}
+
+//type ReadWriterStruct struct {
+//	*Reader
+//	*Writer
+//}
+
+func structEmbedding() {
+	fmt.Println("-----------------------------")
+	fmt.Println("structEmbedding")
+
+	fmt.Println("Error")
+
+}
+
+type Reader interface {
+	Read(p []byte) (n int, err error)
+}
+
+type Writer interface {
+	Write(p []byte) (n int, err error)
+}
+
+// Embedded interfaces
+type ReadWriter interface {
+	Reader
+	Writer
+}
+
+func interfaceEmbedding() {
+	fmt.Println("-----------------------------")
+	fmt.Println("interfaceEmbedding")
+
+	st := `type ReadWriter interface {
+	Reader
+	Writer
+}`
+
+	fmt.Println(st)
 }
 
 func typeAssertions() {
