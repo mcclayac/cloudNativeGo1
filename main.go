@@ -39,6 +39,18 @@ func languageFundamentals() {
 	structs()
 	methods()
 	interfaces()
+	typeAssertions()
+
+}
+
+func typeAssertions() {
+	fmt.Println("-----------------------------")
+	fmt.Println("typeAssertions")
+
+	var s Shape
+	s = Circle{}
+	c := s.(Circle) // Assert that s is a Circle
+	fmt.Printf("%T\n", c)
 
 }
 
@@ -63,7 +75,7 @@ func (r Rectangle) Area() float64 {
 }
 
 func PrintArea(s Shape) {
-	fmt.Println("%T's area is %0.2f\n", s, s.Area())
+	fmt.Printf("%T's area is %0.2f\n", s, s.Area())
 }
 
 func interfaces() {
