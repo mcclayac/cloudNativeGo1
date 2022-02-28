@@ -3,6 +3,7 @@ package main
 import (
 	"errors"
 	"fmt"
+	"math"
 	"math/rand"
 	"os"
 	"time"
@@ -28,7 +29,297 @@ func languageFundamentals() {
 
 	controlStructures()
 	functions()
+	deferFunctions()
+	functionPointerArguements()
+	functionsPointerRefTypes()
+	variadicFunctions()
+	anonymousFunctions()
+	closureFunctions()
 
+	structs()
+	methods()
+	interfaces()
+
+}
+
+type Shape interface {
+	Area() float64
+}
+
+type Circle struct {
+	Radius float64
+}
+
+func (c Circle) Area() float64 {
+	return math.Pi * c.Radius * c.Radius
+}
+
+type Rectangle struct {
+	Width, Height float64
+}
+
+func (r Rectangle) Area() float64 {
+	return r.Width * r.Height
+}
+
+func PrintArea(s Shape) {
+	fmt.Println("%T's area is %0.2f\n", s, s.Area())
+}
+
+func interfaces() {
+	fmt.Println("-----------------------------")
+	fmt.Println("interfaces")
+	/*
+		An interface can thus be viewed as a contract that
+		a type may satisfy, opening the door to powerful
+		abstraction techniques.
+	*/
+
+	r := Rectangle{5, 10}
+	PrintArea(r)
+
+	c := Circle{5}
+	PrintArea(c)
+}
+
+func methods() {
+	fmt.Println("-----------------------------")
+	fmt.Println("methods")
+	/*
+			Methods
+		In Go, methods are functions that are attached to types,
+		including but not limited to structs. The declaration
+		syntax for a method is very similar to that of a function,
+		except that it includes an extra receiver argument before
+		the function name that specifies the type that the method
+		is attached to. When the method is called, the instance
+		is accessible by the name specified in the receiver.
+
+	*/
+
+	vert := Vertex{3, 4}
+	fmt.Printf("fmt.Printf = %v\n", vert)
+
+	vert.Square()
+	fmt.Printf("fmt.Printf = %v\n", vert)
+
+	/*
+		Receivers are type specific: methods attached
+		to a pointer type can only be called on a pointer
+		to that type.
+	*/
+
+	mm := MyMap{"A": 1, "B": 2}
+
+	fmt.Println(mm)                             // "map[A:1 B:2]"
+	fmt.Printf("mm[A] = %v\n", mm["A"])         // "1"
+	fmt.Printf("mm.Length() = %d", mm.Length()) // "2"
+
+}
+
+func (v *Vertex) Square() {
+	v.x *= v.x
+	v.y *= v.y
+}
+
+type Vertex struct {
+	x, y float64
+}
+
+type MyMap map[string]int
+
+func (m MyMap) Length() int {
+	return len(m)
+}
+
+func structs() {
+	fmt.Println("-----------------------------")
+	fmt.Println("structs")
+
+	var v Vertex // Structs are never nil
+	fmt.Printf("fmt.Printf = %v\n", v)
+
+	v = Vertex{}
+	fmt.Printf("fmt.Printf = %v\n", v)
+
+	v = Vertex{1.0, 2.0}
+	fmt.Printf("fmt.Printf = %v\n", v)
+
+	v = Vertex{y: 2.5}
+	fmt.Printf("fmt.Printf = %v\n", v)
+
+	v = Vertex{x: 1.0, y: 3.0}
+	fmt.Printf("fmt.Printf = %v\n", v)
+
+	v.x *= 1.5
+	v.y *= 2.5
+	fmt.Printf("fmt.Printf = %v\n", v)
+
+	var ver *Vertex = &Vertex{1, 3}
+	fmt.Println(ver) // pointer adress of Vertex{1,3}
+
+	ver.x, ver.y = ver.y, ver.x
+	fmt.Printf("fmt.Printf = %v\n", ver)
+
+	// fmt.Println(v)
+
+}
+
+func incrementer() func() int {
+	i := 0
+
+	return func() int { // Return an anonymous function
+		i++ // "Closes over" parent function's i
+		return i
+	}
+}
+
+func closureFunctions() {
+	fmt.Println("-----------------------------")
+	fmt.Println("closureFunctions")
+
+	/*
+		A closure is a nested function that has access to
+		the variables of its parent function, even after
+		the parent has executed.
+	*/
+	increment := incrementer()
+	fmt.Println("increment := incrementer()")
+	fmt.Printf("fmt.Println(increment()) = %d\n", increment())
+	fmt.Printf("fmt.Println(increment()) = %d\n", increment())
+	fmt.Printf("fmt.Println(increment()) = %d\n\n", increment())
+
+	/*
+		fmt.Println(increment()) // 1
+		fmt.Println(increment()) // 2
+		fmt.Println(increment()) // 3
+	*/
+
+	newIncrement := incrementer()
+	fmt.Println("newIncrement := incrementer()")
+	fmt.Printf("fmt.Println(newIncrement()) = %d\n", newIncrement())
+
+	// fmt.Println(newIncrement()) // 1
+}
+
+func anonSum(x, y int) int     { return x + y }
+func anonProduct(x, y int) int { return x * y }
+
+func anonymousFunctions() {
+	fmt.Println("-----------------------------")
+	fmt.Println("anonymousFunctions")
+
+	var f func(int, int) int
+
+	fmt.Println("f = anonSum")
+	fmt.Print("fmt.Println(f(3,5)) = ")
+
+	f = anonSum
+	fmt.Println(f(3, 5)) // 8
+
+	fmt.Println("f = anonProduct")
+	fmt.Print("fmt.Println(f(3, 5)) = ")
+
+	f = anonProduct
+	fmt.Println(f(3, 5)) // 15
+}
+
+func variadicFunctions() {
+	fmt.Println("-----------------------------")
+	fmt.Println("variadicFunctions")
+
+	/*A variadic function is one that
+	may be called with zero or more trailing
+	arguments. The most familiar example is
+	the members of the fmt.Printf family
+	of functions, which accept a single
+	format specifier string and an arbitrary
+	number of additional arguments.
+
+	*/
+
+	const name, age = "kim", 22
+
+	fmt.Printf("%s is %d years old.\n", name, age)
+
+	// variadic functions #2
+	fmt.Println("product(2, 2, 2) = ", product(2, 2, 2)) // 8
+
+	m := []int{3, 3, 3} // a slice
+	fmt.Println("m := []int{3, 3, 3} // a slice")
+	fmt.Printf("fmt.Println(product(m...)) = ")
+	fmt.Println(product(m...))
+
+}
+
+func product(factors ...int) int {
+	p := 1
+
+	for _, n := range factors {
+		p *= n
+	}
+
+	return p
+}
+
+func functionsPointerRefTypes() {
+	fmt.Println("-----------------------------")
+	fmt.Println("functionsPointerRefTypes")
+
+	/*
+		slices, maps, functions, and channels. Changes made
+		to such reference types in a function can affect
+		the caller, without needing to explicitly
+		dereference them:
+	*/
+
+	m := map[string]int{
+		"a": 0,
+		"b": 1,
+	}
+
+	fmt.Println(m)
+
+	update(m)
+
+	fmt.Println(m)
+
+}
+
+func update(m map[string]int) {
+
+	m["c"] = 2
+}
+
+func functionPointerArguements() {
+	fmt.Println("-----------------------------")
+	fmt.Println("functionPointerArguements")
+
+	x := 5
+
+	zerobyValue(x)
+	fmt.Println(x)
+
+	zeroByReference(&x)
+	fmt.Println(x)
+}
+
+func zeroByReference(i *int) {
+	*i = 0
+}
+
+func zerobyValue(x int) {
+	x = 0
+}
+
+func deferFunctions() {
+	fmt.Println("-----------------------------")
+	fmt.Println("deferFunctions")
+
+	fmt.Println("")
+	defer fmt.Println("fn: world")
+	defer fmt.Println("fn: cruel")
+	defer fmt.Println("fn: goodbye")
 }
 
 func add(x, y int) int {
