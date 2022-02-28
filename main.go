@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 	"math/rand"
+	"os"
+	"time"
 )
 
 func main() {
@@ -32,6 +34,136 @@ func controlStructures() {
 	fmt.Println("controlStructures")
 
 	forStatement()
+	loopingOverArrays()
+	loopingOverMaps()
+
+	ifStatement()
+	switchStatement()
+
+}
+
+func switchStatement() {
+	fmt.Println("-----------------------------")
+	fmt.Println("switchStatement")
+	i := 7
+
+	switch i % 3 {
+	case 0:
+		fmt.Println("Zero")
+		fallthrough
+	case 1:
+		fmt.Println("One")
+	case 2:
+		fmt.Println("Two")
+	default:
+		fmt.Println("huh?")
+	}
+
+	hour := time.Now().Hour()
+	fmt.Println("hour = %v\n", hour)
+
+	tm := time.Now()
+	hr := time.Now().Hour()
+	fmt.Printf("tm = %v\n", tm)
+	fmt.Printf("hr = %v\n", hr)
+
+	switch {
+	case hour >= 5 && hour < 9:
+		fmt.Println("I'm writing")
+	case hour >= 9 && hour < 18:
+		fmt.Println("I'm working")
+	default:
+		fmt.Println("I'm sleeping")
+	}
+
+}
+
+func ifStatement() {
+	fmt.Println("-----------------------------")
+	fmt.Println("ifStatement")
+
+	if 7%2 == 0 {
+		fmt.Println("7 is even")
+	}
+
+	if 7%2 != 0 {
+		fmt.Println("7 is odd")
+	}
+
+	fmt.Println("Looking fo a file")
+	if _, err := os.Open("foo.ext"); err != nil {
+		fmt.Println(err)
+	} else {
+		fmt.Println("All is fine")
+	}
+
+	fmt.Println("Looking fo a file #2")
+	if _, err := os.Open("/Users/mcclayac/SSH/AnthonyMcClayVAKeyPair.pem"); err != nil {
+		fmt.Println(err)
+	} else {
+		fmt.Println("/Users/mcclayac/SSH/AnthonyMcClayVAKeyPair.pem is found")
+	}
+
+	fmt.Println("Looking fo a file #3")
+	if _, err := os.Open("main.go"); err != nil {
+		fmt.Println(err)
+	} else {
+		fmt.Println("main.go is found")
+	}
+}
+
+func loopingOverMaps() {
+	fmt.Println("-----------------------------")
+	fmt.Println("loopingOverMaps")
+
+	m := map[int]string{
+		1: "January",
+		2: "February",
+		3: "March",
+		4: "April",
+	}
+
+	for k, v := range m {
+		fmt.Printf("k[%d] -> v[%s]\n", k, v)
+	}
+
+	fmt.Println("Plain values")
+	for k, v := range m {
+		fmt.Printf("%d -> %s\n", k, v)
+	}
+
+}
+
+func loopingOverArrays() {
+	fmt.Println("-----------------------------")
+	fmt.Println("loopingOverArrays")
+	/*
+		Go provides a useful keyword, range, that simplifies
+		looping over a variety of data types.
+
+		In the case of arrays and slices, range can be used
+		with a for statement to retrieve the index and the
+		value of each element as it iterates:
+	*/
+
+	s := []int{2, 4, 6, 8, 16, 32}
+
+	fmt.Println("For Loop with Range")
+	for i, v := range s {
+		fmt.Printf("i[%d] -> v[%d]\n", i, v)
+	}
+
+	fmt.Println("the unneeded values can be discarded by \n",
+		"using the “blank identifier,” signified by the underscore operator:")
+
+	a := []int{0, 2, 4, 6, 8}
+	sum := 0
+
+	for _, v := range a {
+		sum += v
+	}
+
+	fmt.Printf("sum of the loop = %d\n", sum) // 20
 
 }
 
